@@ -1,0 +1,12 @@
+# Node modules and logs
+node_modules/
+server-out.log
+server-err.log
+.env
+.DS_Store
+npm-debug.log
+yarn-error.log
+coverage/
+
+# Docs built for GH Pages
+docs/
