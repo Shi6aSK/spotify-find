@@ -54,8 +54,19 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare Pages token
+        id: set_token
+        run: |
+          if [ -n "${GH_PAGES_PAT}" ]; then
+            echo "token=${GH_PAGES_PAT}" >> $GITHUB_OUTPUT
+          else
+            echo "token=${GITHUB_TOKEN}" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_PAGES_PAT: ${{ secrets.GH_PAGES_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.set_token.outputs.token }}
           publish_dir: ./docs
