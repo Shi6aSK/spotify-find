@@ -14,5 +14,5 @@ COPY . .
 EXPOSE 3000
 
 # Default to PORT env var or 3000
-ENV PORT 3000
+ENV PORT=3000
 CMD ["node", "server.js"]

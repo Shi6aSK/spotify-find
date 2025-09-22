@@ -28,16 +28,16 @@ jobs:
       - name: Determine GHCR image tag (lowercase)
         id: image
         run: |
-          # extract repo (owner/repo -> repo)
+          # repo is owner/repo, extract owner and repo
+          owner="${GITHUB_REPOSITORY%%/*}"
           repo_name="${GITHUB_REPOSITORY#*/}"
           # lowercase owner and repo (GHCR requires lowercase names)
-          lower_owner="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          lower_owner="$(echo "${owner}" | tr '[:upper:]' '[:lower:]')"
           lower_repo="$(echo "${repo_name}" | tr '[:upper:]' '[:lower:]')"
-          image="ghcr.io/${lower_repo}:latest"
+          image="ghcr.io/${lower_owner}/${lower_repo}:latest"
           echo "image=${image}" >> $GITHUB_OUTPUT
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
