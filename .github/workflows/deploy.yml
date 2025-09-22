@@ -25,12 +25,26 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Determine GHCR image tag (lowercase)
+        id: image
+        run: |
+          # extract repo (owner/repo -> repo)
+          repo_name="${GITHUB_REPOSITORY#*/}"
+          # lowercase owner and repo (GHCR requires lowercase names)
+          lower_owner="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          lower_repo="$(echo "${repo_name}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${lower_owner}/${lower_repo}:latest"
+          echo "image=${image}" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          tags: ${{ steps.image.outputs.image }}
 
   deploy-pages:
     needs: build-and-publish
